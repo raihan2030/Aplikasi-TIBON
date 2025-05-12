@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">TIBON</string>
+    <string name="tagline">\"Solusi keuangan anti boncos\"</string>
+    <string name="login">Log In</string>
+    <string name="signup">Sign Up</string>
+    <string name="logout">Log Out</string>
+
+    <string name="welcome">Welcome</string>
+    <string name="create_account">Create Account</string>
+
+    <string name="email_label">example@example.com</string>
+    <string name="password_label">* * * * *</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="dont_have_account">Don\'t have an account? Sign up</string>
+
+    <string name="full_name">Full Name</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="full_name_label">Your Full Name</string>
+    <string name="mobile_num_label">+ 123 456 789</string>
+    <string name="date_label">DD / MM / YYYY</string>
+    <string name="already_have_account">Already have an account? Log in</string>
+
+    <string name="total_saldo">Total Saldo:</string>
+    <string name="pengaturan">Pengaturan</string>
+    <string name="mode_tema">Mode Tema</string>
+    <string name="bahasa">Bahasa</string>
+    <string name="username">Username</string>
+    <string name="bantuan_dukungan">Bantuan &amp; dukungan</string>
+    <string name="cari_transaksi">Cari riwayat transaksi</string>
+    <string name="daftar_rekening">Daftar Rekening</string>
+    <string name="hi_welcome">Hi, Welcome</string>
+    <string name="detail_rekening">Detail Rekening</string>
+    <string name="edit">Edit</string>
+    <string name="hapus">Hapus</string>
+    <string name="tambah_rekening">Tambah Rekening</string>
+    <string name="simpan">Simpan</string>
+</resources>
