@@ -85,21 +85,21 @@ fun AddAccountPage(navController: NavController? = null) {
             TextInput(
                 text = nameText,
                 onTextChange = { nameText = it },
-                label = "Nama Rekening Baru",
+                placeholder = "Nama Rekening Baru",
                 title = "Nama Rekening:"
             )
             Spacer(Modifier.height(15.dp))
             TextInput(
                 text = initialBalanceText,
                 onTextChange = { initialBalanceText = it },
-                label = "Saldo Awal (Opsional)",
+                placeholder = "Saldo Awal (Opsional)",
                 title = "Saldo Awal:"
             )
             Spacer(Modifier.height(15.dp))
             TextInput(
                 text = notesText,
                 onTextChange = { notesText = it },
-                label = "Catatan (Opsional)",
+                placeholder = "Catatan (Opsional)",
                 title = "Catatan:"
             )
             Spacer(Modifier.height(25.dp))
