@@ -1,4 +1,4 @@
-package com.example.tibon
+package com.example.tibon.presentation.navigation
 
 object Routes {
     val firstPage = "first_page"

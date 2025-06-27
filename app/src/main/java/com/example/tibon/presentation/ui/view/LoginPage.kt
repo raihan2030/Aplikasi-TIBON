@@ -1,4 +1,4 @@
-package com.example.tibon
+package com.example.tibon.presentation.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -42,7 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.tibon.ui.theme.TIBONTheme
+import com.example.tibon.R
+import com.example.tibon.presentation.navigation.Routes
+import com.example.tibon.presentation.ui.theme.TIBONTheme
 
 @Composable
 fun LoginPage(navController: NavController? = null) {

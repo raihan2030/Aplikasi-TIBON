@@ -1,4 +1,4 @@
-package com.example.tibon
+package com.example.tibon.presentation.ui.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -35,7 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.tibon.ui.theme.TIBONTheme
+import com.example.tibon.R
+import com.example.tibon.data.local.TransactionHistory
+import com.example.tibon.data.local.formatter
+import com.example.tibon.data.local.rupiahFormat
+import com.example.tibon.data.local.transactionHistory1
+import com.example.tibon.data.local.transactionList
+import com.example.tibon.presentation.ui.theme.TIBONTheme
 
 @Composable
 fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = null){

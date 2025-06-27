@@ -1,4 +1,4 @@
-package com.example.tibon.ui.theme
+package com.example.tibon.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

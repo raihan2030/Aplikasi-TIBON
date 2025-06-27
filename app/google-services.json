@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "964592280306",
+    "project_id": "tibon-project",
+    "storage_bucket": "tibon-project.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:964592280306:android:9e721c373093346344e66b",
+        "android_client_info": {
+          "package_name": "com.example.tibon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEZqzNiYeEZgxcflau33Ar27wr1gmxTWk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

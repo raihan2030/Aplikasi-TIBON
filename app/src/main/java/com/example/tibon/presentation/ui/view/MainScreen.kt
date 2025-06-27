@@ -1,4 +1,4 @@
-package com.example.tibon
+package com.example.tibon.presentation.ui.view
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -22,6 +22,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.tibon.R
+import com.example.tibon.data.local.NavItem
 
 @Composable
 fun MainScreen(navController: NavController? = null) {

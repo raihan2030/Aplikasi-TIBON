@@ -1,4 +1,4 @@
-package com.example.tibon
+package com.example.tibon.data.local
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
