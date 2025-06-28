@@ -4,7 +4,6 @@
     <string name="login">Log In</string>
     <string name="signup">Sign Up</string>
     <string name="logout">Log Out</string>
-
     <string name="welcome">Welcome</string>
     <string name="create_account">Create Account</string>
 
@@ -30,6 +29,7 @@
     <string name="bahasa">Bahasa</string>
     <string name="username">Username</string>
     <string name="bantuan_dukungan">Bantuan &amp; dukungan</string>
+    <string name="transaction_history">Riwayat Transaksi</string>
     <string name="cari_transaksi">Cari riwayat transaksi</string>
     <string name="daftar_rekening">Daftar Rekening</string>
     <string name="hi_welcome">Hi, Welcome</string>
@@ -38,4 +38,10 @@
     <string name="hapus">Hapus</string>
     <string name="tambah_rekening">Tambah Rekening</string>
     <string name="simpan">Simpan</string>
+    <string name="home_nav">Beranda</string>
+    <string name="history_nav">Riwayat</string>
+    <string name="profile_nav">Profil</string>
+    <string name="edit_rekening">Edit Rekening</string>
+    <string name="simpan_perubahan">Simpan Perubahan</string>
+    <string name="catatan">Catatan</string>
 </resources>

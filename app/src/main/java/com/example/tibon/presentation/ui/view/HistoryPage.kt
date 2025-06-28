@@ -1,39 +1,26 @@
 package com.example.tibon.presentation.ui.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tibon.R
 import com.example.tibon.data.local.TransactionHistory
@@ -42,150 +29,148 @@ import com.example.tibon.data.local.rupiahFormat
 import com.example.tibon.data.local.transactionHistory1
 import com.example.tibon.data.local.transactionList
 import com.example.tibon.presentation.ui.theme.TIBONTheme
+import com.example.tibon.presentation.ui.theme.ThemeSetting
 
 @Composable
-fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = null){
-    var text by rememberSaveable { mutableStateOf("") }
+fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = null) {
+    var searchText by rememberSaveable { mutableStateOf("") }
 
-    Column (
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                color = colorResource(R.color.light_green)
-            )
+            .padding(horizontal = 16.dp, vertical = 20.dp)
+            .background(MaterialTheme.colorScheme.background)
     ) {
-        Column (
+        Text(
+            stringResource(R.string.transaction_history),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(Modifier.height(16.dp))
+
+        //Search Bar
+        OutlinedTextField(
+            value = searchText,
+            onValueChange = { searchText = it },
+            placeholder = { Text(text = stringResource(R.string.cari_transaksi)) },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TextField(
-                value = text,
-                onValueChange = { text = it },
-                label = {
-                    Text(
-                        text = stringResource(R.string.cari_transaksi),
-                        color = colorResource(R.color.gray)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                ,
-                shape = RoundedCornerShape(25.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = colorResource(R.color.white),
-                    unfocusedContainerColor = colorResource(R.color.white),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent
-                ),
-                leadingIcon = {
-                    Icon(
-                        modifier = Modifier.padding(start = 10.dp),
-                        imageVector = Icons.Default.Search,
-                        tint = colorResource(R.color.gray),
-                        contentDescription = null
-                    )
-                },
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp),
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
+            },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
             )
-            Spacer(Modifier.height(15.dp))
-            LazyColumn (
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                val allTransactionHistory = transactionList.flatMap { transaction ->
-                    transaction.transactionHistory.map { history ->
-                        transaction.name to history
-                    }
+        )
+
+        // Daftar Riwayat
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
+            contentPadding = PaddingValues(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            val allTransactionHistory = transactionList.flatMap { transaction ->
+                transaction.transactionHistory.map { history ->
+                    transaction.name to history
                 }
-                items(allTransactionHistory) { (name, history) ->
-                    HistoryItem(name, history)
-                }
+            }
+            items(allTransactionHistory) { (name, history) ->
+                HistoryItem(accountName = name, transactionHistory = history)
             }
         }
     }
 }
 
 @Composable
-fun HistoryItem(name: String, transactionHistory: TransactionHistory) {
-    Card (
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .padding(bottom = 0.dp),
-        shape = RoundedCornerShape(13.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.white_green)
-        )
+fun HistoryItem(accountName: String, transactionHistory: TransactionHistory) {
+    val isIncome = transactionHistory.nominal > 0
+    val amountColor = if (isIncome) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
+    val icon = if (isIncome) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward
+    val formattedAmount = if (isIncome) "+${rupiahFormat(transactionHistory.nominal)}" else rupiahFormat(transactionHistory.nominal)
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        Column (
+        Row(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 15.dp, horizontal = 25.dp)
+                .padding(16.dp)
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row (
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(amountColor.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = name,
-                    fontFamily = FontFamily(Font(R.font.comfortaa_bold)),
-                    fontSize = 18.sp,
-                    color = colorResource(R.color.green)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = if (isIncome) "Income" else "Outcome",
+                    tint = amountColor,
+                    modifier = Modifier.size(24.dp)
                 )
-                Spacer(Modifier.weight(1f))
-                if(transactionHistory.nominal > 0){
-                    Text(
-                        text = "+${rupiahFormat(transactionHistory.nominal)}",
-                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                        color = colorResource(R.color.green)
-                    )
-                }
-                else{
-                    Text(
-                        text = rupiahFormat(transactionHistory.nominal),
-                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                        color = colorResource(R.color.red)
-                    )
-                }
             }
-            Spacer(Modifier.weight(1f))
-            Row (
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = transactionHistory.description,
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(Modifier.weight(1f))
+                Text(
+                    text = accountName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(Modifier.width(8.dp))
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = formattedAmount,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = amountColor
+                )
                 Text(
                     text = formatter.format(transactionHistory.date),
-                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                    fontSize = 14.sp
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
     }
-    Spacer(Modifier.height(10.dp))
 }
 
-@Preview(widthDp = 360)
+@Preview(showBackground = true, name = "Light Mode")
+@Composable
+fun HistoryPagePreviewLight() {
+    TIBONTheme(themeSetting = ThemeSetting.Light) {
+        HistoryPage()
+    }
+}
+
+@Preview(showBackground = true, name = "Dark Mode")
+@Composable
+fun HistoryPagePreviewDark() {
+    TIBONTheme(themeSetting = ThemeSetting.Dark) {
+        HistoryPage()
+    }
+}
+
+@Preview
 @Composable
 fun HistoryItemPreview() {
     TIBONTheme {
-        HistoryItem(transactionList[0].name, transactionHistory1[0])
-    }
-}
-
-
-@Preview(
-    widthDp = 360,
-    heightDp = 800,
-    showBackground = true
-)
-@Composable
-fun HistoryPagePreview() {
-    TIBONTheme {
-        HistoryPage()
+        HistoryItem(accountName = transactionList[0].name, transactionHistory = transactionHistory1[0])
     }
 }

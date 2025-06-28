@@ -72,9 +72,15 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun TIBONTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeSetting: ThemeSetting = ThemeSetting.System,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (themeSetting) {
+        ThemeSetting.System -> isSystemInDarkTheme()
+        ThemeSetting.Light -> false
+        ThemeSetting.Dark -> true
+    }
+
     val colorScheme = if (darkTheme) {
         DarkColorScheme
     } else {

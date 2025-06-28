@@ -52,6 +52,7 @@ import androidx.navigation.NavController
 import com.example.tibon.R
 import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
+import com.example.tibon.presentation.ui.theme.ThemeSetting
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -305,7 +306,7 @@ fun DateInput(
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
 fun SignUpPagePreviewLight() {
-    TIBONTheme(darkTheme = false) {
+    TIBONTheme(themeSetting = ThemeSetting.Light) {
         Surface {
             SignUpPage()
         }
@@ -315,7 +316,7 @@ fun SignUpPagePreviewLight() {
 @Preview(showBackground = true, name = "Dark Mode")
 @Composable
 fun SignUpPagePreviewDark() {
-    TIBONTheme(darkTheme = true) {
+    TIBONTheme(themeSetting = ThemeSetting.Dark) {
         Surface {
             SignUpPage()
         }

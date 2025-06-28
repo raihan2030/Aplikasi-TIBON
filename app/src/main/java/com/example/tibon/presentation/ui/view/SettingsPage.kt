@@ -1,90 +1,82 @@
 package com.example.tibon.presentation.ui.view
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.example.tibon.R
 import com.example.tibon.presentation.ui.theme.TIBONTheme
+import com.example.tibon.presentation.ui.theme.ThemeSetting
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsPage(navController: NavController? = null) {
-    Scaffold (
+fun SettingsPage(
+    navController: NavController? = null,
+    currentTheme: ThemeSetting,
+    onThemeChange: (ThemeSetting) -> Unit = {} // Terima lambda
+) {
+    var showThemeDialog by remember { mutableStateOf(false) }
+
+    if (showThemeDialog) {
+        ThemeSelectionDialog(
+            currentTheme = currentTheme,
+            onDismiss = { showThemeDialog = false },
+            onThemeSelected = { newTheme ->
+                onThemeChange(newTheme)
+                showThemeDialog = false
+            }
+        )
+    }
+
+    Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.pengaturan),
-                        fontFamily = FontFamily(Font(R.font.poppins_semibold))
-                    )
-                },
+                title = { Text(stringResource(R.string.pengaturan), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton( onClick = { navController?.navigateUp() } ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
-                        )
+                    IconButton(onClick = { navController?.navigateUp() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(R.color.green),
-                    titleContentColor = colorResource(R.color.yellow),
-                    navigationIconContentColor = colorResource(R.color.yellow)
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
-
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(
-                    color = colorResource(R.color.light_green)
-                )
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp)
         ) {
             SettingsItem(
-                name = stringResource(R.string.mode_tema),
-                iconVector = Icons.Default.Brush,
-                onButtonClick = {  }
+                icon = Icons.Default.Brush,
+                title = stringResource(R.string.mode_tema),
+                subtitle = "Pilih tema aplikasi", // Ganti dengan deskripsi yang lebih baik
+                onClick = { showThemeDialog = true }
             )
             SettingsItem(
-                name = stringResource(R.string.bahasa),
-                iconVector = Icons.Default.Language,
-                onButtonClick = {  }
+                icon = Icons.Default.Language,
+                title = stringResource(R.string.bahasa),
+                subtitle = "Pilih bahasa aplikasi",
+                onClick = { /* TODO */ }
             )
         }
     }
@@ -92,52 +84,104 @@ fun SettingsPage(navController: NavController? = null) {
 
 @Composable
 fun SettingsItem(
-    name: String,
-    iconVector: ImageVector,
-    onButtonClick: () -> Unit
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
 ) {
-    Button(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = colorResource(R.color.green2)
-            ),
-        shape = RoundedCornerShape(0.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(R.color.light_green),
-            contentColor = colorResource(R.color.dark_green)
-        ),
-        onClick = onButtonClick
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick)
+            .padding(vertical = 12.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row (
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.size(25.dp),
-                imageVector = iconVector,
-                contentDescription = null
-            )
-            Spacer(Modifier.width(20.dp))
+        Icon(
+            imageVector = icon,
+            contentDescription = title,
+            modifier = Modifier.size(28.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Spacer(Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.bodyLarge)
             Text(
-                text = name,
-                fontFamily = FontFamily(Font(R.font.poppins_medium)),
-                fontSize = 18.sp
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
 }
 
-@Preview(
-    showBackground = true,
-    widthDp = 360,
-    heightDp = 800
-)
 @Composable
-fun SettingsPagePreview(){
-    TIBONTheme {
-        SettingsPage()
+fun ThemeSelectionDialog(
+    currentTheme: ThemeSetting,
+    onDismiss: () -> Unit,
+    onThemeSelected: (ThemeSetting) -> Unit
+) {
+    val themeOptions = listOf(
+        ThemeSetting.System to "Default Sistem",
+        ThemeSetting.Light to "Terang",
+        ThemeSetting.Dark to "Gelap"
+    )
+    var selectedOption by remember { mutableStateOf(currentTheme) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Pilih Tema", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(bottom = 16.dp))
+                themeOptions.forEach { (theme, label) ->
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { selectedOption = theme }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (theme == selectedOption),
+                            onClick = { selectedOption = theme }
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(text = label)
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Batal")
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Button(onClick = { onThemeSelected(selectedOption) }) {
+                        Text("OK")
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsPagePreviewLight() {
+    TIBONTheme(themeSetting = ThemeSetting.Light) {
+        SettingsPage(currentTheme = ThemeSetting.Light, onThemeChange = {})
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsPagePreviewDark() {
+    TIBONTheme(themeSetting = ThemeSetting.Dark) {
+        SettingsPage(currentTheme = ThemeSetting.Dark, onThemeChange = {})
     }
 }

@@ -1,10 +1,10 @@
 package com.example.tibon.presentation.ui.view
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,29 +15,36 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tibon.R
 import com.example.tibon.data.local.Transaction
@@ -45,261 +52,220 @@ import com.example.tibon.data.local.rupiahFormat
 import com.example.tibon.data.local.transactionList
 import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
+import com.example.tibon.presentation.ui.theme.ThemeSetting
 
 @Composable
-fun HomePage(modifier: Modifier = Modifier, navController: NavController? = null){
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
-    val orientation = configuration.orientation
-    val innerBackgroundHeight = when(orientation) {
-        Configuration.ORIENTATION_PORTRAIT -> screenHeight * 0.8f
-        else -> screenHeight * 1.2f
-    }
-
-    LazyColumn (
+fun HomePage(modifier: Modifier = Modifier, navController: NavController? = null) {
+    // Perubahan: Scaffold dihilangkan dari sini.
+    // Modifier yang diterima sudah berisi padding yang benar dari MainScreen.
+    LazyColumn(
         modifier = modifier
-            .fillMaxWidth()
-            .height(screenHeight)
-            .background(
-                color = colorResource(R.color.green)
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         item {
-            TopItem()
+            HomeHeader()
         }
-
         item {
-            Column (
-                modifier = Modifier
-                    .background(
-                        color = colorResource(R.color.light_green),
-                        shape = RoundedCornerShape(
-                            topStart = 30.dp,
-                            topEnd = 30.dp
-                        )
-                    )
-                    .fillMaxWidth()
-                    .height(innerBackgroundHeight)
-            ) {
-                Spacer(Modifier.height(60.dp))
-                Row (
-                    modifier = Modifier.padding(horizontal = 25.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        modifier = Modifier.size(130.dp),
-                        painter = painterResource(R.drawable.pie_chart),
-                        contentDescription = null
-                    )
-                    Spacer(Modifier.weight(1f))
-                    Column {
-                        Row {
-                            Icon(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(top = 5.dp),
-                                imageVector = Icons.Default.Circle,
-                                tint = colorResource(R.color.green),
-                                contentDescription = null
-                            )
-                            Spacer(Modifier.width(3.dp))
-                            Column {
-                                Text(
-                                    text = "Total Pemasukan:",
-                                    fontFamily = FontFamily(Font(R.font.poppins_semibold)),
-                                    fontSize = 14.sp,
-                                    color = colorResource(R.color.dark_green)
-                                )
-                                Text(
-                                    text = "Rp 100.000,00",
-                                    fontFamily = FontFamily(Font(R.font.poppins_semibold)),
-                                    color = colorResource(R.color.dark_green)
-                                )
-                            }
-                        }
-                        Spacer(Modifier.height(40.dp))
-                        Row {
-                            Icon(
-                                modifier = Modifier
-                                    .size(20.dp)
-                                    .padding(top = 5.dp),
-                                imageVector = Icons.Default.Circle,
-                                tint = colorResource(R.color.yellow),
-                                contentDescription = null
-                            )
-                            Spacer(Modifier.width(3.dp))
-                            Column {
-                                Text(
-                                    text = "Total Pengeluaran:",
-                                    fontFamily = FontFamily(Font(R.font.poppins_semibold)),
-                                    fontSize = 14.sp,
-                                    color = colorResource(R.color.dark_green)
-                                )
-                                Text(
-                                    text = "Rp 50.000,00",
-                                    fontFamily = FontFamily(Font(R.font.poppins_semibold)),
-                                    color = colorResource(R.color.dark_green)
-                                )
-                            }
-                        }
-                    }
-                }
-                Spacer(Modifier.height(60.dp))
-                Column (
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.daftar_rekening),
-                            fontFamily = FontFamily(Font(R.font.comfortaa_bold)),
-                            color = colorResource(R.color.dark_green)
-                        )
-                        Spacer(Modifier.weight(1f))
-                        Button(
-                            modifier = Modifier
-                                .size(width = 70.dp, height = 30.dp)
-                                .padding(0.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = colorResource(R.color.yellow),
-                                contentColor = colorResource(R.color.green)
-                            ),
-                            onClick = { navController?.navigate(Routes.addAccountPage) }
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                imageVector = Icons.Default.Add,
-                                contentDescription = null
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.height(10.dp))
-                    LazyColumn (
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                        items(transactionList) { transaction ->
-                            AccountItem(transaction, navController)
-                        }
-                    }
-                }
-            }
+            BalanceSummaryCard()
         }
-
-    }
-}
-
-@Composable
-fun TopItem() {
-    Row (
-        modifier = Modifier.padding(20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                modifier = Modifier.size(35.dp),
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "Profile Icon",
-                tint = colorResource(R.color.yellow)
-            )
-            Spacer(Modifier.width(8.dp))
-            Column {
-                Text(
-                    lineHeight = 10.sp,
-                    text = stringResource(R.string.hi_welcome),
-                    color = colorResource(R.color.yellow),
-                    fontFamily = FontFamily(Font(R.font.poppins_medium)),
-                    fontSize = 12.sp
-                )
-                Text(
-                    lineHeight = 5.sp,
-                    text = stringResource(R.string.username),
-                    color = colorResource(R.color.yellow),
-                    fontFamily = FontFamily(Font(R.font.poppins_semibold)),
-                    fontSize = 18.sp
-                )
-            }
+        item {
+            AccountsHeader()
         }
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(
-            onClick = {  }
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = Icons.Default.Notifications,
-                contentDescription = "Icon",
-                tint = colorResource(R.color.yellow)
+        items(transactionList) { transaction ->
+            AccountItem(
+                transaction = transaction,
+                onClick = { navController?.navigate(Routes.detailAccountPage) }
             )
         }
     }
 }
 
 @Composable
-fun AccountItem(transaction: Transaction, navController: NavController? = null) {
-    Button(
+fun HomeHeader() {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 10.dp)
-            .height(80.dp),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(0.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(R.color.green)
-        ),
-        onClick = { navController?.navigate(Routes.detailAccountPage) }
+            .padding(start = 16.dp, end = 16.dp, top = 24.dp, bottom = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 15.dp, horizontal = 20.dp)
-        ) {
+        Icon(
+            imageVector = Icons.Default.AccountCircle,
+            contentDescription = "Profile Icon",
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(40.dp)
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = transaction.name,
-                fontFamily = FontFamily(Font(R.font.poppins_bold)),
-                fontSize = 20.sp,
-                color = colorResource(R.color.yellow)
+                text = stringResource(R.string.hi_welcome),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(Modifier.weight(1f))
-            Row {
-                Text(
-                    text = stringResource(R.string.total_saldo),
-                    fontFamily = FontFamily(Font(R.font.poppins_medium))
+            Text(
+                text = stringResource(R.string.username),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                imageVector = Icons.Default.Notifications,
+                contentDescription = "Notifications",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun BalanceSummaryCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = stringResource(R.string.total_saldo),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Text(
+                text = "Rp 150.000,00", // Ganti dengan data dinamis
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+            Spacer(Modifier.height(24.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                IncomeOutcomeItem(
+                    icon = Icons.Default.ArrowUpward,
+                    label = "Pemasukan",
+                    amount = "Rp 100.000,00",
+                    color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(Modifier.weight(1f))
-                Text(
-                    text = rupiahFormat(transaction.balance),
-                    fontFamily = FontFamily(Font(R.font.poppins_medium))
+                IncomeOutcomeItem(
+                    icon = Icons.Default.ArrowDownward,
+                    label = "Pengeluaran",
+                    amount = "Rp 50.000,00",
+                    color = MaterialTheme.colorScheme.tertiary
                 )
             }
         }
     }
 }
 
-@Preview(widthDp = 360)
 @Composable
-fun AccountItemPreview(){
-    TIBONTheme {
-        AccountItem(transactionList[0])
+fun IncomeOutcomeItem(icon: ImageVector, label: String, amount: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(color.copy(alpha = 0.1f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(imageVector = icon, contentDescription = label, tint = color, modifier = Modifier.size(24.dp))
+        }
+        Spacer(Modifier.width(8.dp))
+        Column {
+            Text(text = label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(text = amount, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+        }
     }
 }
 
-@Preview(
-    widthDp = 360,
-    heightDp = 800,
-    showBackground = true
-)
+
 @Composable
-fun HomePagePreview() {
-    TIBONTheme {
+fun AccountsHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.daftar_rekening),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f)
+        )
+        TextButton(onClick = { /*TODO*/ }) {
+            Text(text = "Lihat Semua")
+        }
+    }
+}
+
+
+@Composable
+fun AccountItem(transaction: Transaction, onClick: () -> Unit) {
+    Card(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Placeholder untuk ikon rekening
+            Image(
+                painter = painterResource(id = R.drawable.wallet_12519859), // Ganti dengan ikon yang sesuai
+                contentDescription = transaction.name,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+                    .padding(8.dp)
+            )
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = transaction.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = "Rekening Pribadi", // Deskripsi tambahan
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Text(
+                text = rupiahFormat(transaction.balance),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+// Preview Section
+@Preview(showBackground = true, name = "Light Mode")
+@Composable
+fun HomePagePreviewLight() {
+    TIBONTheme(themeSetting = ThemeSetting.Light) {
+        HomePage()
+    }
+}
+
+@Preview(showBackground = true, name = "Dark Mode")
+@Composable
+fun HomePagePreviewDark() {
+    TIBONTheme(themeSetting = ThemeSetting.Dark) {
         HomePage()
     }
 }

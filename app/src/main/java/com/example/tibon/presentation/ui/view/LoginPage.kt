@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.example.tibon.R
 import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
+import com.example.tibon.presentation.ui.theme.ThemeSetting
 
 @Composable
 fun LoginPage(navController: NavController? = null) {
@@ -202,7 +203,7 @@ fun PasswordInput(
 @Preview(showBackground = true, name = "Light Mode", heightDp = 800)
 @Composable
 fun LoginPagePreviewLight() {
-    TIBONTheme(darkTheme = false) {
+    TIBONTheme(themeSetting = ThemeSetting.Light) {
         Surface {
             LoginPage()
         }
@@ -212,7 +213,7 @@ fun LoginPagePreviewLight() {
 @Preview(showBackground = true, name = "Dark Mode", heightDp = 800)
 @Composable
 fun LoginPagePreviewDark() {
-    TIBONTheme(darkTheme = true) {
+    TIBONTheme(themeSetting = ThemeSetting.Dark) {
         Surface {
             LoginPage()
         }

@@ -8,4 +8,6 @@ object Routes {
     val detailAccountPage = "detail_account_page"
     val settingsPage = "settings_page"
     val addAccountPage = "add_account_page"
+    val editAccountPage = "edit_account_page"
+    val addTransactionPage = "add_transaction_page"
 }
