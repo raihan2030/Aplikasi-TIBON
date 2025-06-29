@@ -11,14 +11,19 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.tibon.R
-import com.example.tibon.data.local.NavItem
 import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
 import com.example.tibon.presentation.ui.theme.ThemeSetting
+
+data class NavItem (
+    val label: String,
+    val icon: ImageVector
+)
 
 @Composable
 fun MainScreen(

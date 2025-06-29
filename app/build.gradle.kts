@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,14 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.google.firebase.crashlytics)
     alias(libs.plugins.devtools.ksp)
+}
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+} else {
+    logger.warn("File 'local.properties' tidak ditemukan. API Key tidak akan dimuat.")
 }
 
 android {
@@ -23,6 +34,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        val apiKey = localProperties.getProperty("API_KEY", "")
+        if (apiKey.isEmpty()) {
+            logger.error("PERINGATAN: API_KEY tidak ditemukan di local.properties. Panggilan API akan gagal.")
+        }
+        buildConfigField("String", "API_KEY", "\"$apiKey\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -71,18 +92,23 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.animation.core.lint)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
     // Room for Local Database
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler) // WAJIB: Aktifkan kembali ksp untuk Room
+    ksp(libs.androidx.room.compiler)
+
+    implementation(libs.datastore.preferences)
 
     // Retrofit for Remote API
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
+    ksp(libs.moshi.kotlin.codegen)
     implementation(libs.logging.interceptor)
 
     // WorkManager for Background Tasks
@@ -92,6 +118,8 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+
+    implementation(libs.accompanist.flowlayout)
 
     // Testing
     testImplementation(libs.junit)

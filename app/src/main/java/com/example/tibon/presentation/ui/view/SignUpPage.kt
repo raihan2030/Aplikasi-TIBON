@@ -75,11 +75,10 @@ fun SignUpPage(navController: NavController? = null) {
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.primary)
         ) {
-            // Box untuk Header "Create Account"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.25f), // Mengambil 1/4 bagian atas layar
+                    .fillMaxHeight(0.25f),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -90,11 +89,10 @@ fun SignUpPage(navController: NavController? = null) {
                 )
             }
 
-            // Column untuk Form, ditumpuk di atas dan diatur ke bawah
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.75f) // Mengambil sisa layar dengan sedikit overlap
+                    .fillMaxHeight(0.75f)
                     .align(Alignment.BottomCenter)
                     .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
                     .background(MaterialTheme.colorScheme.background)
@@ -191,7 +189,6 @@ fun SignUpPage(navController: NavController? = null) {
     }
 }
 
-// Composable baru untuk input nomor telepon
 @Composable
 fun PhoneNumberInput(
     text: String,
@@ -208,7 +205,7 @@ fun PhoneNumberInput(
         )
         OutlinedTextField(
             value = text,
-            onValueChange = { onTextChange(it.filter { char -> char.isDigit() }) }, // Hanya mengizinkan angka
+            onValueChange = { onTextChange(it.filter { char -> char.isDigit() }) },
             placeholder = { Text(text = placeholder) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -226,7 +223,6 @@ fun PhoneNumberInput(
     }
 }
 
-// Composable baru untuk input tanggal lahir (versi bersih)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DateInput(
@@ -235,7 +231,6 @@ fun DateInput(
     placeholder: String,
     title: String
 ) {
-    // Variabel yang tidak digunakan telah dihapus
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis()
@@ -248,7 +243,6 @@ fun DateInput(
                 TextButton(
                     onClick = {
                         showDatePicker = false
-                        // Pastikan tanggal dipilih sebelum memformat
                         datePickerState.selectedDateMillis?.let { millis ->
                             val selectedDate = Calendar.getInstance().apply {
                                 timeInMillis = millis

@@ -37,18 +37,16 @@ fun LoginPage(navController: NavController? = null) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
     Scaffold { innerPadding ->
-        // Box sebagai dasar untuk menumpuk elemen UI
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.primary) // Latar belakang utama (hijau)
+                .background(MaterialTheme.colorScheme.primary)
         ) {
-            // Box untuk Header "Welcome"
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.25f), // Mengambil 1/3 bagian atas layar
+                    .fillMaxHeight(0.25f),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -59,14 +57,13 @@ fun LoginPage(navController: NavController? = null) {
                 )
             }
 
-            // Column untuk Form, ditumpuk di atas dan diatur ke bawah
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.75f) // Mengambil 2/3 bagian bawah layar
-                    .align(Alignment.BottomCenter) // Menempel ke bagian bawah Box induk
-                    .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)) // Di-clip DULU
-                    .background(MaterialTheme.colorScheme.background) // BARU diberi background
+                    .fillMaxHeight(0.75f)
+                    .align(Alignment.BottomCenter)
+                    .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(32.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,

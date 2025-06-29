@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material3.*
@@ -14,22 +15,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.tibon.R
+import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
 import com.example.tibon.presentation.ui.theme.ThemeSetting
+import com.example.tibon.service.NotificationWorker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsPage(
     navController: NavController? = null,
     currentTheme: ThemeSetting,
-    onThemeChange: (ThemeSetting) -> Unit = {} // Terima lambda
+    onThemeChange: (ThemeSetting) -> Unit = {}
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
 
@@ -59,6 +65,8 @@ fun SettingsPage(
             )
         }
     ) { innerPadding ->
+        val context = LocalContext.current
+
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -69,7 +77,7 @@ fun SettingsPage(
             SettingsItem(
                 icon = Icons.Default.Brush,
                 title = stringResource(R.string.mode_tema),
-                subtitle = "Pilih tema aplikasi", // Ganti dengan deskripsi yang lebih baik
+                subtitle = "Pilih tema aplikasi",
                 onClick = { showThemeDialog = true }
             )
             SettingsItem(
@@ -78,6 +86,29 @@ fun SettingsPage(
                 subtitle = "Pilih bahasa aplikasi",
                 onClick = { /* TODO */ }
             )
+            SettingsItem(
+                icon = Icons.Default.AttachMoney,
+                title = "Pengaturan Kurs",
+                subtitle = "Ubah kurs mata uang",
+                onClick = { navController?.navigate(Routes.currencySettingsPage) }
+            )
+            //Tombol untuk tes logging crashlytics
+//            Button(
+//                onClick = { throw RuntimeException("Test Crash") },
+//                modifier = Modifier.padding(16.dp),
+//                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+//            ) {
+//                Text("Test Crash")
+//            }
+            Button(
+                onClick = {
+                    val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+                    WorkManager.getInstance(context).enqueue(workRequest)
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text("Tes Jalankan Worker Notifikasi")
+            }
         }
     }
 }

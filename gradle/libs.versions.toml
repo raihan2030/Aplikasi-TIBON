@@ -1,28 +1,33 @@
 [versions]
-androidGradlePlugin = "8.8.0"
+androidGradlePlugin = "8.8.2"
 kotlin = "2.0.0"
 ksp = "2.0.0-1.0.21" # Versi KSP harus cocok dengan versi Kotlin
 composeCompiler = "1.5.13" # Versi compiler Compose yang kompatibel dengan Kotlin 2.0.0
-coreKtx = "1.13.1"
-lifecycleRuntimeKtx = "2.8.1"
-activityCompose = "1.9.0"
-composeBom = "2024.06.00"
+coreKtx = "1.16.0"
+lifecycleRuntimeKtx = "2.9.1"
+activityCompose = "1.10.1"
+composeBom = "2025.06.01"
 materialIconsExtended = "<version>"
-navigationCompose = "2.7.7"
+navigationCompose = "2.9.0"
 hilt = "2.51.1"
 hiltNavigationCompose = "1.2.0"
-room = "2.6.1"
+room = "2.7.2"
 retrofit = "2.11.0"
 moshi = "1.15.1"
 okhttp = "4.12.0"
-workManager = "2.9.0"
-firebaseBom = "33.1.0"
+workManager = "2.10.2"
+firebaseBom = "33.16.0"
 junit = "4.13.2"
-androidxJunit = "1.1.5"
-espressoCore = "3.5.1"
-googleServicesPlugin = "4.4.2"
-crashlyticsPlugin = "3.0.1"
+androidxJunit = "1.2.1"
+espressoCore = "3.6.1"
+googleServicesPlugin = "4.4.3"
+crashlyticsPlugin = "3.0.4"
 animationCoreLint = "1.8.3"
+datastore = "1.1.7"
+hiltCommon = "1.2.0"
+hiltWork = "1.2.0"
+accompanist = "0.34.0"
+material3Jvmstubs = "1.4.0-alpha16"
 
 [libraries]
 # AndroidX & Jetpack Compose
@@ -39,6 +44,7 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 # Hilt - Dependency Injection
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -54,6 +60,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 
 # WorkManager - Background Tasks
@@ -71,6 +78,10 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-animation-core-lint = { group = "androidx.compose.animation", name = "animation-core-lint", version.ref = "animationCoreLint" }
+androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+accompanist-flowlayout = { group = "com.google.accompanist", name = "accompanist-flowlayout", version.ref = "accompanist" }
+androidx-material3-jvmstubs = { group = "androidx.compose.material3", name = "material3-jvmstubs", version.ref = "material3Jvmstubs" }
 
 [plugins]
 # Plugin utama

@@ -18,18 +18,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.tibon.R
-import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
 import com.example.tibon.presentation.ui.theme.ThemeSetting
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.tibon.presentation.ui.viewmodel.TibonViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddAccountPage(navController: NavController? = null) {
+fun AddAccountPage(
+    navController: NavController? = null,
+    viewModel: TibonViewModel = hiltViewModel()
+) {
     var nameText by rememberSaveable { mutableStateOf("") }
     var initialBalanceText by rememberSaveable { mutableStateOf("") }
     var notesText by rememberSaveable { mutableStateOf("") }
 
-    val accountTypes = listOf("Transaksi (Pemasukan & Pengeluaran)", "Tabungan (Menyimpan Saja)")
+    val accountTypes = listOf("Transaksi", "Tabungan")
     var expanded by remember { mutableStateOf(false) }
     var selectedAccountType by rememberSaveable { mutableStateOf(accountTypes[0]) }
 
@@ -60,7 +64,14 @@ fun AddAccountPage(navController: NavController? = null) {
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         ),
                         onClick = {
-                            navController?.navigate(Routes.mainScreenPage)
+                            val balance = initialBalanceText.toDoubleOrNull() ?: 0.0
+                            viewModel.addAccount(
+                                nameText,
+                                balance,
+                                notesText.ifEmpty { null },
+                                selectedAccountType
+                            )
+                            navController?.popBackStack()
                         }
                     ) {
                         Text(
@@ -82,7 +93,6 @@ fun AddAccountPage(navController: NavController? = null) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Menggunakan TextInput yang sudah kita standarisasi
             TextInput(
                 text = nameText,
                 onTextChange = { nameText = it },
@@ -109,7 +119,7 @@ fun AddAccountPage(navController: NavController? = null) {
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .menuAnchor(), // Penting untuk menautkan text field dengan menu
+                            .menuAnchor(),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -132,7 +142,6 @@ fun AddAccountPage(navController: NavController? = null) {
                     }
                 }
             }
-            // Input khusus untuk angka/mata uang
             NumberInput(
                 text = initialBalanceText,
                 onTextChange = { initialBalanceText = it },
@@ -149,7 +158,6 @@ fun AddAccountPage(navController: NavController? = null) {
     }
 }
 
-// Composable baru untuk input angka
 @Composable
 fun NumberInput(
     text: String,

@@ -10,11 +10,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.example.tibon.presentation.navigation.Routes
 import com.example.tibon.presentation.ui.theme.TIBONTheme
 import com.example.tibon.presentation.ui.theme.ThemeSetting
 import com.example.tibon.presentation.ui.view.*
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,9 +46,26 @@ fun MainApp(
         composable(Routes.loginPage) { LoginPage(navController) }
         composable(Routes.signUpPage) { SignUpPage(navController) }
         composable(Routes.mainScreenPage) { MainScreen(navController = navController) }
-        composable(Routes.detailAccountPage) { DetailAccountPage(navController) }
+        composable(
+            route = Routes.detailAccountPage + "/{accountId}",
+            arguments = listOf(navArgument("accountId") { type = NavType.IntType }),
+            deepLinks = listOf(navDeepLink { uriPattern = "tibon://account/{accountId}" })
+        ) { backStackEntry ->
+            DetailAccountPage(
+                navController = navController,
+                accountId = backStackEntry.arguments?.getInt("accountId") ?: 0
+            )
+        }
         composable(Routes.addAccountPage) { AddAccountPage(navController) }
-        composable(Routes.editAccountPage) { EditAccountPage(navController) }
+        composable(
+            route = Routes.editAccountPage + "/{accountId}",
+            arguments = listOf(navArgument("accountId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            EditAccountPage(
+                navController = navController,
+                accountId = backStackEntry.arguments?.getInt("accountId") ?: 0
+            )
+        }
         composable(Routes.settingsPage) {
             SettingsPage(
                 navController = navController,
@@ -54,13 +74,32 @@ fun MainApp(
             )
         }
         composable(
-            route = Routes.addTransactionPage + "/{transactionType}",
-            arguments = listOf(navArgument("transactionType") { type = NavType.StringType })
+            route = Routes.addTransactionPage + "/{accountId}/{transactionType}",
+            arguments = listOf(
+                navArgument("accountId") { type = NavType.IntType },
+                navArgument("transactionType") { type = NavType.StringType }
+            )
         ) { backStackEntry ->
             AddTransactionPage(
                 navController = navController,
-                transactionType = backStackEntry.arguments?.getString("transactionType")
+                accountId = backStackEntry.arguments?.getInt("accountId") ?: 0,
+                transactionType = backStackEntry.arguments?.getString("transactionType") ?: "Pengeluaran"
             )
+        }
+        composable(
+            route = Routes.accountHistoryPage + "/{accountId}",
+            arguments = listOf(navArgument("accountId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            AccountHistoryPage(
+                navController = navController,
+                accountId = backStackEntry.arguments?.getInt("accountId") ?: 0
+            )
+        }
+        composable(Routes.allAccountsPage) {
+            AllAccountsPage(navController = navController)
+        }
+        composable(Routes.currencySettingsPage) {
+            CurrencySettingsPage(navController = navController)
         }
     }
 }

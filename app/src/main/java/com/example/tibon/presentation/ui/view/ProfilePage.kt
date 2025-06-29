@@ -180,7 +180,6 @@ fun ProfileMenuItem(
     }
 }
 
-// Preview Section
 @Preview(showBackground = true, name = "Light Mode")
 @Composable
 fun ProfilePagePreviewLight() {

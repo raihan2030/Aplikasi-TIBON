@@ -1,51 +1,112 @@
 package com.example.tibon.presentation.ui.view
 
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tibon.R
-import com.example.tibon.presentation.ui.theme.TIBONTheme
-import com.example.tibon.presentation.ui.theme.ThemeSetting
+import com.example.tibon.presentation.ui.viewmodel.TibonViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionPage(
-    navController: NavController? = null,
-    transactionType: String? // "pemasukan" atau "pengeluaran"
+    navController: NavController,
+    accountId: Int,
+    transactionType: String,
+    viewModel: TibonViewModel = hiltViewModel()
 ) {
-    val pageTitle = if (transactionType == "pemasukan") "Tambah Pemasukan" else "Tambah Pengeluaran"
+    val context = LocalContext.current
+    val pageTitle = if (transactionType == "Pemasukan") "Tambah Pemasukan" else "Tambah Pengeluaran"
 
-    // --- State untuk data input ---
     var amountText by rememberSaveable { mutableStateOf("") }
     var descriptionText by rememberSaveable { mutableStateOf("") }
-    var dateText by rememberSaveable { mutableStateOf("") }
 
-    // --- State untuk dropdown kategori ---
-    val incomeCategories = listOf("Gaji", "Bonus", "Hadiah", "Lainnya")
-    val expenseCategories = listOf("Makanan", "Transportasi", "Belanja", "Hiburan", "Tagihan", "Lainnya")
-    val categories = if (transactionType == "pemasukan") incomeCategories else expenseCategories
+    val today = remember { Date() }
+    val dateFormatter = remember { SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) }
+    var selectedDate by remember { mutableStateOf(today) }
+    var dateText by rememberSaveable { mutableStateOf(dateFormatter.format(today)) }
+
+    val incomeCategories by viewModel.allIncomeCategories.collectAsState(initial = emptyList())
+    val expenseCategories by viewModel.allExpenseCategories.collectAsState(initial = emptyList())
+    val categories = remember(incomeCategories, expenseCategories, transactionType) {
+        val sourceList = if (transactionType == "Pemasukan") {
+            incomeCategories.map { it.name }
+        } else {
+            expenseCategories.map { it.name }
+        }
+        val others = sourceList.filter { it.equals("Lainnya", ignoreCase = true) }
+        val sortedList = sourceList.filter { !it.equals("Lainnya", ignoreCase = true) }.sorted()
+        sortedList + others
+    }
 
     var categoryExpanded by remember { mutableStateOf(false) }
-    var selectedCategory by rememberSaveable { mutableStateOf(categories[0]) }
+    var selectedCategory by rememberSaveable { mutableStateOf(categories.firstOrNull() ?: "") }
+
+    LaunchedEffect(categories) {
+        if (categories.isNotEmpty()) {
+            selectedCategory = categories.first()
+        }
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(pageTitle, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController?.navigateUp() }) {
+                    IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -63,8 +124,21 @@ fun AddTransactionPage(
                             .padding(16.dp)
                             .height(55.dp),
                         onClick = {
-                            // TODO: Logika untuk menyimpan transaksi
-                            navController?.navigateUp()
+                            val amount = amountText.toDoubleOrNull()
+                            if (amount == null || amount <= 0) {
+                                Toast.makeText(context, "Jumlah harus diisi dan lebih dari 0", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+
+                            viewModel.addTransaction(
+                                accountId = accountId,
+                                amount = amount,
+                                type = transactionType,
+                                category = selectedCategory,
+                                description = descriptionText,
+                                date = selectedDate
+                            )
+                            navController.popBackStack()
                         }
                     ) {
                         Text(
@@ -121,14 +195,21 @@ fun AddTransactionPage(
                         expanded = categoryExpanded,
                         onDismissRequest = { categoryExpanded = false }
                     ) {
-                        categories.forEach { category ->
+                        if (categories.isEmpty()) {
                             DropdownMenuItem(
-                                text = { Text(text = category) },
-                                onClick = {
-                                    selectedCategory = category
-                                    categoryExpanded = false
-                                }
+                                text = { Text(text = "Memuat...") },
+                                onClick = { /* Do nothing */ }
                             )
+                        } else {
+                            categories.forEach { category ->
+                                DropdownMenuItem(
+                                    text = { Text(text = category) },
+                                    onClick = {
+                                        selectedCategory = category
+                                        categoryExpanded = false
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -136,12 +217,15 @@ fun AddTransactionPage(
             TextInput(
                 text = descriptionText,
                 onTextChange = { descriptionText = it },
-                placeholder = "Contoh: Gaji bulan ini",
-                title = "Deskripsi"
+                placeholder = "Contoh: Makan siang bareng teman",
+                title = "Deskripsi (Opsional)"
             )
             DateInput(
                 text = dateText,
-                onTextChange = { dateText = it },
+                onDateSelected = { dateString, dateObject ->
+                    dateText = dateString
+                    selectedDate = dateObject
+                },
                 placeholder = "Pilih tanggal",
                 title = "Tanggal Transaksi"
             )
@@ -149,18 +233,76 @@ fun AddTransactionPage(
     }
 }
 
-@Preview(showBackground = true, name = "Tambah Pemasukan")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddIncomePreview() {
-    TIBONTheme(themeSetting = ThemeSetting.Light) {
-        AddTransactionPage(transactionType = "pemasukan")
+fun DateInput(
+    text: String,
+    onDateSelected: (String, Date) -> Unit,
+    placeholder: String,
+    title: String
+) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    val selectedDateMillis = remember(text) {
+        try {
+            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            sdf.parse(text)?.time
+        } catch (e: Exception) {
+            System.currentTimeMillis()
+        }
     }
-}
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = selectedDateMillis
+    )
 
-@Preview(showBackground = true, name = "Tambah Pengeluaran")
-@Composable
-fun AddExpensePreview() {
-    TIBONTheme(themeSetting = ThemeSetting.Dark) {
-        AddTransactionPage(transactionType = "pengeluaran")
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker = false
+                        datePickerState.selectedDateMillis?.let { millis ->
+                            val selectedDate = Calendar.getInstance().apply {
+                                timeInMillis = millis
+                            }.time
+                            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            onDateSelected(sdf.format(selectedDate), selectedDate)
+                        }
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+        )
+        Box {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { },
+                readOnly = true,
+                placeholder = { Text(text = placeholder) },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.CalendarToday, contentDescription = "Calendar Icon")
+                }
+            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Transparent)
+                    .clickable { showDatePicker = true }
+            )
+        }
     }
 }

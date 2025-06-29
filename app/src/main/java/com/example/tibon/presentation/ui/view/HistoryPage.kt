@@ -21,19 +21,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.tibon.R
-import com.example.tibon.data.local.TransactionHistory
-import com.example.tibon.data.local.formatter
-import com.example.tibon.data.local.rupiahFormat
-import com.example.tibon.data.local.transactionHistory1
-import com.example.tibon.data.local.transactionList
+import com.example.tibon.data.local.Transaction
+import com.example.tibon.domain.model.CurrencySetting
 import com.example.tibon.presentation.ui.theme.TIBONTheme
 import com.example.tibon.presentation.ui.theme.ThemeSetting
+import com.example.tibon.presentation.ui.viewmodel.TibonViewModel
+import com.example.tibon.presentation.ui.viewmodel.UiState
+import com.example.tibon.presentation.util.formatCurrency
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
-fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = null) {
+fun HistoryPage(
+    modifier: Modifier = Modifier,
+    navController: NavController? = null,
+    viewModel: TibonViewModel = hiltViewModel()
+) {
+    val accounts by viewModel.allAccounts.collectAsState(initial = emptyList())
+    val transactions by viewModel.allTransactions.collectAsState(initial = emptyList())
     var searchText by rememberSaveable { mutableStateOf("") }
+
+    val currencySetting by viewModel.currencySetting.collectAsState()
+    val ratesState by viewModel.conversionRates.collectAsState()
+
+    val transactionWithAccountName = transactions.map { transaction ->
+        val accountName = accounts.find { it.id == transaction.accountId }?.name ?: "Tidak Diketahui"
+        Pair(transaction, accountName)
+    }
+
+    val filteredTransactions = if (searchText.isBlank()) {
+        transactionWithAccountName
+    } else {
+        transactionWithAccountName.filter { (transaction, accountName) ->
+            transaction.category.contains(searchText, ignoreCase = true) || accountName.contains(searchText, ignoreCase = true)
+        }
+    }
 
     Column(
         modifier = modifier
@@ -53,8 +78,7 @@ fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = n
             value = searchText,
             onValueChange = { searchText = it },
             placeholder = { Text(text = stringResource(R.string.cari_transaksi)) },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(24.dp),
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
@@ -67,7 +91,7 @@ fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = n
             )
         )
 
-        // Daftar Riwayat
+        // History List
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -75,24 +99,31 @@ fun HistoryPage(modifier: Modifier = Modifier, navController: NavController? = n
             contentPadding = PaddingValues(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            val allTransactionHistory = transactionList.flatMap { transaction ->
-                transaction.transactionHistory.map { history ->
-                    transaction.name to history
-                }
-            }
-            items(allTransactionHistory) { (name, history) ->
-                HistoryItem(accountName = name, transactionHistory = history)
+            items(filteredTransactions) { (transaction, accountName) ->
+                HistoryItem(
+                    transaction = transaction,
+                    accountName = accountName,
+                    currencySetting = currencySetting,
+                    ratesState = ratesState
+                )
             }
         }
     }
 }
 
 @Composable
-fun HistoryItem(accountName: String, transactionHistory: TransactionHistory) {
-    val isIncome = transactionHistory.nominal > 0
+fun HistoryItem(
+    transaction: Transaction,
+    accountName: String,
+    currencySetting: CurrencySetting,
+    ratesState: UiState<Map<String, Double>>
+) {
+    val isIncome = transaction.type == "Pemasukan"
     val amountColor = if (isIncome) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
     val icon = if (isIncome) Icons.Default.ArrowUpward else Icons.Default.ArrowDownward
-    val formattedAmount = if (isIncome) "+${rupiahFormat(transactionHistory.nominal)}" else rupiahFormat(transactionHistory.nominal)
+    val formatter = remember { SimpleDateFormat("dd MMM yy", Locale("id", "ID")) }
+    val targetRate = if (ratesState is UiState.Success) ratesState.data[currencySetting.code] else null
+    val formattedAmount = (if (isIncome) "+" else "-") + formatCurrency(transaction.amount, currencySetting, targetRate)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -114,7 +145,7 @@ fun HistoryItem(accountName: String, transactionHistory: TransactionHistory) {
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = if (isIncome) "Income" else "Outcome",
+                    contentDescription = transaction.type,
                     tint = amountColor,
                     modifier = Modifier.size(24.dp)
                 )
@@ -122,7 +153,7 @@ fun HistoryItem(accountName: String, transactionHistory: TransactionHistory) {
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = transactionHistory.description,
+                    text = transaction.category,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -142,7 +173,7 @@ fun HistoryItem(accountName: String, transactionHistory: TransactionHistory) {
                     color = amountColor
                 )
                 Text(
-                    text = formatter.format(transactionHistory.date),
+                    text = formatter.format(transaction.date),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -156,21 +187,5 @@ fun HistoryItem(accountName: String, transactionHistory: TransactionHistory) {
 fun HistoryPagePreviewLight() {
     TIBONTheme(themeSetting = ThemeSetting.Light) {
         HistoryPage()
-    }
-}
-
-@Preview(showBackground = true, name = "Dark Mode")
-@Composable
-fun HistoryPagePreviewDark() {
-    TIBONTheme(themeSetting = ThemeSetting.Dark) {
-        HistoryPage()
-    }
-}
-
-@Preview
-@Composable
-fun HistoryItemPreview() {
-    TIBONTheme {
-        HistoryItem(accountName = transactionList[0].name, transactionHistory = transactionHistory1[0])
     }
 }
