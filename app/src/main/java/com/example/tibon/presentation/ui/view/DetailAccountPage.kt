@@ -101,7 +101,7 @@ fun DetailAccountPage(
                     onClick = {
                         account?.let {
                             viewModel.deleteAccount(it)
-                            navController.popBackStack()
+                            navController.navigate(Routes.mainScreenPage)
                         }
                         showDeleteDialog = false
                     },

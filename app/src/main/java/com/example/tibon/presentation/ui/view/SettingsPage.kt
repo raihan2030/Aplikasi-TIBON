@@ -100,15 +100,15 @@ fun SettingsPage(
 //            ) {
 //                Text("Test Crash")
 //            }
-            Button(
-                onClick = {
-                    val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
-                    WorkManager.getInstance(context).enqueue(workRequest)
-                },
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text("Tes Jalankan Worker Notifikasi")
-            }
+//            Button(
+//                onClick = {
+//                    val workRequest = OneTimeWorkRequestBuilder<NotificationWorker>().build()
+//                    WorkManager.getInstance(context).enqueue(workRequest)
+//                },
+//                modifier = Modifier.padding(16.dp)
+//            ) {
+//                Text("Tes Jalankan Worker Notifikasi")
+//            }
         }
     }
 }

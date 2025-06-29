@@ -24,6 +24,10 @@ class AddTransactionUseCase @Inject constructor(
             description = description?.ifEmpty { null },
             date = date
         )
-        repository.addTransaction(transaction)
+
+        val transactionId = repository.addTransactionAndGetId(transaction)
+        val transactionWithId = transaction.copy(id = transactionId.toInt())
+
+        repository.saveTransactionToRealtimeDatabase(transactionWithId)
     }
 }

@@ -26,7 +26,6 @@ class NotificationWorker @AssistedInject constructor(
             val accounts = dao.getAllAccounts().first()
             val calendar = Calendar.getInstance()
             val todayName = SimpleDateFormat("EEEE", Locale.ENGLISH).format(calendar.time).uppercase()
-            // [BARU] Ambil jam saat ini (format 24 jam)
             val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
 
             accounts.forEach { account ->
@@ -35,7 +34,6 @@ class NotificationWorker @AssistedInject constructor(
 
                 val shouldNotifyToday = (schedule == "DAILY" || schedule.contains(todayName))
 
-                // [DIPERBAIKI] Tambahkan pengecekan jam
                 if (shouldNotifyToday && currentHour == notificationHour) {
                     val title = "Pengingat Keuangan"
                     val message = "Jangan lupa catat transaksi untuk rekening '${account.name}' hari ini!"
@@ -49,7 +47,6 @@ class NotificationWorker @AssistedInject constructor(
             }
             return Result.success()
         } catch (e: Exception) {
-            // Sebaiknya log error ini ke Crashlytics
             Firebase.crashlytics.recordException(e)
             return Result.failure()
         }

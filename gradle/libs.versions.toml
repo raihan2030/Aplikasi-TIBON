@@ -70,6 +70,8 @@ androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx"
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database-ktx" }
+#firebase-auth = { group = "com.google.firebase", name = "firebase-auth-ktx" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -19,17 +19,20 @@ interface AppDao {
     fun getAllAccounts(): Flow<List<Account>>
 
     @Query("SELECT * FROM accounts WHERE id = :accountId")
-    fun getAccountById(accountId: Int): Flow<Account>
+    fun getAccountById(accountId: Int): Flow<Account?>
 
     // Transaction Queries
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTransaction(transaction: Transaction)
+    suspend fun insertTransaction(transaction: Transaction): Long
 
     @Delete
     suspend fun deleteTransaction(transaction: Transaction)
 
     @Query("SELECT * FROM transactions WHERE accountId = :accountId ORDER BY date DESC")
     fun getTransactionsForAccount(accountId: Int): Flow<List<Transaction>>
+
+    @Query("SELECT * FROM transactions WHERE accountId = :accountId")
+    suspend fun getTransactionsForAccountOnce(accountId: Int): List<Transaction>
 
     @Query("SELECT * FROM transactions ORDER BY date DESC")
     fun getAllTransactions(): Flow<List<Transaction>>

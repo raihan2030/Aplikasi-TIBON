@@ -12,7 +12,7 @@ class UpdateAccountUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(account: Account) {
         repository.updateAccount(account)
-
+        repository.updateAccountInRealtimeDatabase(account)
 
         // Log event ke Firebase Analytics
         Firebase.analytics.logEvent("edit_account") {

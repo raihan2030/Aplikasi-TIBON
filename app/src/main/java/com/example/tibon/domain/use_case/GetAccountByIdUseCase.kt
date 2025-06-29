@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetAccountByIdUseCase @Inject constructor(
     private val repository: TibonRepository
 ) {
-    operator fun invoke(id: Int): Flow<Account> {
+    operator fun invoke(id: Int): Flow<Account?> {
         return repository.getAccountById(id)
     }
 }

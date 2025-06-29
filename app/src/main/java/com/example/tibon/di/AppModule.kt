@@ -27,6 +27,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Provider
 import javax.inject.Singleton
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -126,6 +129,12 @@ abstract class AppModule {
         @Singleton
         fun provideApiService(retrofit: Retrofit): ApiService {
             return retrofit.create(ApiService::class.java)
+        }
+
+        @Provides
+        @Singleton
+        fun provideFirebaseDatabase(): FirebaseDatabase {
+            return Firebase.database
         }
     }
 }

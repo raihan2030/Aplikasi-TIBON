@@ -20,7 +20,6 @@ sealed class UiState<out T> {
 
 @HiltViewModel
 class TibonViewModel @Inject constructor(
-    // Injeksi semua use case yang dibutuhkan
     private val getAccountsUseCase: GetAccountsUseCase,
     private val addAccountUseCase: AddAccountUseCase,
     private val getAccountByIdUseCase: GetAccountByIdUseCase,
@@ -35,27 +34,27 @@ class TibonViewModel @Inject constructor(
     private val getCurrencySettingUseCase: GetCurrencySettingUseCase,
     private val saveCurrencySettingUseCase: SaveCurrencySettingUseCase,
     private val fetchRatesUseCase: FetchRatesUseCase,
-    private val getNotificationHistoryUseCase: GetNotificationHistoryUseCase
+    private val getNotificationHistoryUseCase: GetNotificationHistoryUseCase,
+//    private val signUpUseCase: SignUpUseCase,
+//    private val loginUseCase: LoginUseCase,
+//    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+//    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
-    // [DIPERBAIKI] Ambil data dari use case, bukan dari DAO langsung
     val allAccounts = getAccountsUseCase()
     val allTransactions = getAllTransactionsUseCase()
     val allIncomeCategories = getIncomeCategoriesUseCase()
     val allExpenseCategories = getExpenseCategoriesUseCase()
 
-    // State untuk pengaturan kurs saat ini
     private val _currencySetting = MutableStateFlow(CurrencySetting("IDR", "Rp"))
     val currencySetting = _currencySetting.asStateFlow()
 
-    // State untuk menyimpan semua nilai konversi
     private val _conversionRates = MutableStateFlow<UiState<Map<String, Double>>>(UiState.Loading)
     val conversionRates = _conversionRates.asStateFlow()
 
     val notificationHistory = getNotificationHistoryUseCase()
 
     init {
-        // Saat ViewModel dibuat, langsung ambil pengaturan tersimpan dan fetch kurs terbaru
         viewModelScope.launch {
             getCurrencySettingUseCase().collect { setting ->
                 _currencySetting.value = setting
@@ -64,11 +63,9 @@ class TibonViewModel @Inject constructor(
         }
     }
 
-    // Fungsi untuk mengubah kurs
     fun changeCurrency(code: String, symbol: String) {
         viewModelScope.launch {
             saveCurrencySettingUseCase(code, symbol)
-            // Pengaturan akan otomatis ter-update melalui Flow di blok init
         }
     }
 
@@ -79,8 +76,8 @@ class TibonViewModel @Inject constructor(
             }
         }
     }
-    // [DIPERBAIKI] Semua fungsi sekarang hanya memanggil use case yang sesuai
-    fun getAccountById(accountId: Int): Flow<Account> {
+
+    fun getAccountById(accountId: Int): Flow<Account?> {
         return getAccountByIdUseCase(accountId)
     }
 

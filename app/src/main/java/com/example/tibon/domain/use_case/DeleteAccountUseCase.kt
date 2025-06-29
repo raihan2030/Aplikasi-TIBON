@@ -11,6 +11,14 @@ class DeleteAccountUseCase @Inject constructor(
     private val repository: TibonRepository
 ) {
     suspend operator fun invoke(account: Account) {
+        val transactionsToDelete = repository.getTransactionsForAccountOnce(account.id)
+
+        transactionsToDelete.forEach { transaction ->
+            repository.deleteTransactionFromRealtimeDatabase(transaction.id)
+        }
+
+        repository.deleteAccountFromRealtimeDatabase(account.id)
+
         repository.deleteAccount(account)
 
         // Log event ke Firebase Analytics

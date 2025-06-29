@@ -5,25 +5,22 @@ import java.text.NumberFormat
 import java.util.Currency
 import java.util.Locale
 
-// [DIPERBAIKI] Ubah parameter untuk menerima objek CurrencySetting
 fun formatCurrency(
     value: Double,
     setting: CurrencySetting,
     conversionRate: Double?
 ): String {
     if (conversionRate == null) {
-        return "${setting.symbol} --" // Tampilkan placeholder jika kurs belum tersedia
+        return "${setting.symbol} --"
     }
 
     val convertedValue = value * conversionRate
 
-    // Coba format berdasarkan Locale, fallback ke format manual jika tidak ada
     return try {
         val format = NumberFormat.getCurrencyInstance()
         format.currency = Currency.getInstance(setting.code)
         format.format(convertedValue)
     } catch (e: Exception) {
-        // Fallback untuk simbol yang tidak standar atau kode yang tidak dikenal Locale
         String.format(Locale.getDefault(), "%s%.2f", setting.symbol, convertedValue)
     }
 }

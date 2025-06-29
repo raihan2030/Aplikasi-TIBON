@@ -15,6 +15,10 @@ class AddAccountUseCase @Inject constructor(
     suspend operator fun invoke(name: String, initialBalance: Double, notes: String?, type: String) {
         val account = Account(name = name, notes = notes, type = type)
         val accountId = repository.addAccount(account)
+
+        val accountWithId = account.copy(id = accountId.toInt())
+        repository.saveAccountToRealtimeDatabase(accountWithId)
+
         if (initialBalance > 0) {
             val transaction = Transaction(
                 accountId = accountId.toInt(),
@@ -24,7 +28,10 @@ class AddAccountUseCase @Inject constructor(
                 description = "Saldo Awal",
                 date = Date()
             )
-            repository.addTransaction(transaction)
+            val transactionId = repository.addTransactionAndGetId(transaction)
+
+            val transactionWithId = transaction.copy(id = transactionId.toInt())
+            repository.saveTransactionToRealtimeDatabase(transactionWithId)
         }
 
         //Log event ke Firebase Analytics

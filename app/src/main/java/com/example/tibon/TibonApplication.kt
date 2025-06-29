@@ -10,13 +10,11 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidApp
-// [DIPERBAIKI] Kembalikan implementasi Configuration.Provider
 class TibonApplication : Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
-    // [DIPERBAIKI] Sediakan konfigurasi melalui override ini, jangan panggil initialize() manual
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
@@ -24,13 +22,11 @@ class TibonApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        // Panggil fungsi lain seperti biasa
         NotificationHelper.createNotificationChannel(this)
         scheduleDailyNotificationWorker()
     }
 
     private fun scheduleDailyNotificationWorker() {
-        // Logika penjadwalan ini sudah benar
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
             .build()
